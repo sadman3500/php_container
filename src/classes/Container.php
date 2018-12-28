@@ -11,9 +11,18 @@ class Container implements ContainerInterface
      */
     private $definitions = [];
     
+    private static $instance;
+    
     private $shared = [];
     
-
+    public function __construct() {
+        self::$instance = & $this;
+    }
+    
+    public static function getInstance() {
+        return self::$instance;
+    }
+    
     public function get($id)
     {
         if (!$this->has($id)) {
@@ -56,10 +65,11 @@ class Container implements ContainerInterface
         $callable = $definition[0];
         $isShared = $definition[1];
         
+        
         if($isShared) {
-            $obj = $this->shared[$id];
+            $obj = &$this->shared[$id];
             if(is_null($obj)) {
-                $obj = $this->shared[$id] = $callable($this);
+                $obj = $callable($this);
             }
             return $obj;
         }
